@@ -264,7 +264,48 @@ docker compose down -v              # ademas elimina el volumen de Metabase
 
 ## Como descargar los datos
 
-<!-- TODO (Ejercicios 2.6, 5.1 y 8.1) -->
+Con el ambiente levantado, ejecutar el script dentro del contenedor `lab`:
+
+```bash
+# Taxis amarillos y verdes de 2026 (todos los meses publicados a la fecha)
+docker exec lab8-lab python scripts/download_data.py
+```
+
+Los archivos quedan en `data/raw/<tipo>/<anio>/<tipo>_tripdata_<anio>-<mes>.parquet`
+(dentro del contenedor: `/workspace/data/raw/...`). La ruta se calcula a partir
+de la ubicacion del script, asi que puede ejecutarse desde cualquier carpeta.
+
+Opciones:
+
+| Opcion | Descripcion |
+|--------|-------------|
+| `--taxi {yellow,green,all}` | Tipo de taxi (por defecto `all`). |
+| `--anio 2026 [2025 ...]` | Uno o varios anios (por defecto `2026`). |
+| `--solo-verificar` | No descarga; compara lo local con el servidor y reporta archivos pendientes. |
+
+El script se puede ejecutar cuantas veces se quiera:
+
+- no vuelve a descargar archivos que ya existen, son Parquet validos y tienen
+  el mismo tamanio que el publicado por la TLC;
+- descarga los meses que la TLC haya publicado desde la ultima ejecucion, y
+  vuelve a descargar archivos truncados o republicados por la TLC;
+- distingue un mes no publicado (HTTP 403/404) de una falla de red; ante fallas
+  termina con codigo de salida 1;
+- al final muestra un inventario con filas y tamanio por archivo.
+
+Para comprobar que los datos locales estan completos sin descargar nada:
+
+```bash
+docker exec lab8-lab python scripts/download_data.py --solo-verificar
+```
+
+El analisis del script original, los cambios realizados, las pruebas y la
+verificacion de completitud (Ejercicio 2) estan documentados en
+[`docs/descarga_datos.md`](docs/descarga_datos.md).
+
+> **Nota:** a partir de junio de 2026 los archivos incluyen la columna
+> `request_source`. Para leer varios meses juntos use
+> `read_parquet('data/raw/yellow/2026/*.parquet', union_by_name = true)`.
 
 ## Como ejecutar el analisis
 
