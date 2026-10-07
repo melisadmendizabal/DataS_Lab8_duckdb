@@ -272,7 +272,10 @@ docker exec lab8-lab python scripts/download_data.py
 ```
 
 Los archivos quedan en `data/raw/<tipo>/<anio>/<tipo>_tripdata_<anio>-<mes>.parquet`
-(dentro del contenedor: `/workspace/data/raw/...`). La ruta se calcula a partir
+(dentro del contenedor: `/workspace/data/raw/...`). El script tambien descarga,
+una sola vez, la tabla de zonas de la TLC en `data/raw/zones/taxi_zone_lookup.csv`
+(relaciona `PULocationID`/`DOLocationID` con distrito y zona; la usa el
+Ejercicio 4). La ruta se calcula a partir
 de la ubicacion del script, asi que puede ejecutarse desde cualquier carpeta.
 
 Opciones:
@@ -309,7 +312,49 @@ verificacion de completitud (Ejercicio 2) estan documentados en
 
 ## Como ejecutar el analisis
 
-<!-- TODO -->
+Las consultas SQL estan versionadas en `sql/`, un archivo por consulta, con
+su objetivo y los archivos fuente en el encabezado. Se pueden ejecutar de dos
+formas (con el ambiente levantado y los datos descargados):
+
+**Desde la linea de comandos**, con `scripts/run_sql.py`, que ejecuta los
+archivos en orden sobre una base DuckDB en memoria y muestra resultado y
+tiempo de cada uno:
+
+```bash
+# Ejercicio 3: exploracion directa de los Parquet
+docker exec lab8-lab python scripts/run_sql.py sql/03_exploracion
+
+# Una sola consulta, mostrando hasta 60 filas
+docker exec lab8-lab python scripts/run_sql.py sql/03_exploracion/13_reglas_de_calidad.sql --filas 60
+```
+
+**Desde JupyterLab** (<http://localhost:8888>), abriendo
+`notebooks/03_exploracion_parquet.ipynb` y ejecutando todas las celdas. Para
+regenerar el notebook con sus resultados sin abrir el navegador:
+
+```bash
+docker exec -w /workspace/notebooks lab8-lab jupyter nbconvert --to notebook --execute --inplace 03_exploracion_parquet.ipynb
+```
+
+| Ejercicio | Consultas | Notebook | Documentacion |
+|-----------|-----------|----------|---------------|
+| 3 - Consultas directas sobre Parquet | `sql/03_exploracion/` | `notebooks/03_exploracion_parquet.ipynb` | [`docs/03_consultas_parquet.md`](docs/03_consultas_parquet.md) |
+| 4 - Analisis exploratorio | `sql/04_analisis/` | `notebooks/04_analisis_exploratorio.ipynb` | [`docs/04_analisis_exploratorio.md`](docs/04_analisis_exploratorio.md) (figuras en `docs/figuras/`) |
+
+En el Ejercicio 4, `sql/04_analisis/00_vistas.sql` define las vistas
+temporales (`viajes`, `viajes_validos`, `zonas`, `metodos_pago`) que usan las
+demas consultas, por lo que debe ejecutarse primero. `run_sql.py` y el notebook
+lo hacen automaticamente al recorrer los archivos en orden. Para ejecutar una
+sola consulta, incluya las vistas:
+
+```bash
+docker exec lab8-lab python scripts/run_sql.py sql/04_analisis/00_vistas.sql sql/04_analisis/07_viajes_aeropuerto.sql
+```
+
+> **Memoria:** `run_sql.py` limita DuckDB a 3 GB (`--memoria` para cambiarlo).
+> Con el limite por defecto (80% de la RAM del contenedor) algunas consultas
+> fallan con `Cannot allocate memory` porque Metabase comparte la memoria
+> asignada a Docker.
 
 ## Como reproducir los benchmarks
 

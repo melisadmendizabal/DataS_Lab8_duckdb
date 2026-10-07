@@ -17,6 +17,7 @@ Uso:
 
 Los archivos se guardan en:
     data/raw/<tipo>/<anio>/<nombre-original>.parquet
+    data/raw/zones/taxi_zone_lookup.csv     (tabla de zonas, una sola vez)
 
 La ruta es relativa a la raiz del proyecto (no al directorio actual), de modo
 que el script puede ejecutarse desde cualquier carpeta.
@@ -58,6 +59,12 @@ BLOQUE = 1024 * 1024        # 1 MiB por bloque de descarga
 SUFIJO_TEMPORAL = ".part"
 CODIGOS_NO_PUBLICADO = (403, 404)   # S3/CloudFront responde 403 si no existe
 FIRMA_PARQUET = b"PAR1"             # bytes al inicio y al final de todo Parquet
+
+# Tabla de zonas de la TLC: relaciona PULocationID/DOLocationID con su
+# distrito (Borough) y nombre de zona. Es la misma para todos los anios.
+URL_ZONAS = "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
+RUTA_ZONAS = DIR_DESTINO / "zones" / "taxi_zone_lookup.csv"
+ENCABEZADO_ZONAS = '"LocationID","Borough","Zone","service_zone"'
 
 
 def construir_nombre(tipo: str, anio: int, mes: int) -> str:
@@ -292,6 +299,38 @@ def inventario(tipo: str, anio: int) -> None:
           f"{formato_tamanio(total_bytes):>10}  ({len(archivos)} archivos)")
 
 
+def descargar_zonas(solo_verificar: bool = False) -> str:
+    """Descarga la tabla de zonas de la TLC si no existe localmente.
+
+    Devuelve "omitido", "descargado", "pendiente" o "fallido".
+    """
+    print("\n=== ZONAS (taxi_zone_lookup.csv) ===")
+    if RUTA_ZONAS.exists() and RUTA_ZONAS.read_text(encoding="utf-8").startswith(ENCABEZADO_ZONAS):
+        print(f"  ya existe, se omite -> {ruta_legible(RUTA_ZONAS)}")
+        return "omitido"
+    if solo_verificar:
+        print("  PENDIENTE: no existe localmente o no es valido")
+        return "pendiente"
+
+    RUTA_ZONAS.parent.mkdir(parents=True, exist_ok=True)
+    temporal = RUTA_ZONAS.with_name(RUTA_ZONAS.name + SUFIJO_TEMPORAL)
+    try:
+        respuesta = requests.get(URL_ZONAS, timeout=TIEMPO_ESPERA)
+        respuesta.raise_for_status()
+        if not respuesta.text.startswith(ENCABEZADO_ZONAS):
+            raise requests.RequestException("el archivo no tiene el encabezado esperado")
+        temporal.write_text(respuesta.text, encoding="utf-8")
+        temporal.replace(RUTA_ZONAS)
+    except requests.RequestException as error:
+        print(f"  ERROR: {error}")
+        return "fallido"
+    finally:
+        temporal.unlink(missing_ok=True)
+    zonas = len(RUTA_ZONAS.read_text(encoding="utf-8").splitlines()) - 1
+    print(f"  listo ({zonas} zonas) -> {ruta_legible(RUTA_ZONAS)}")
+    return "descargado"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Descarga los datos de viajes de taxi del NYC TLC."
@@ -322,6 +361,10 @@ def main() -> int:
             for clave in ("no_publicados", "fallidos", "pendientes"):
                 total[clave] += [f"{tipo} {m}" for m in resumen[clave]]
             huecos += [f"{tipo} {anio}-{m:02d}" for m in meses_con_huecos(resumen)]
+
+    estado_zonas = descargar_zonas(argumentos.solo_verificar)
+    if estado_zonas in ("fallido", "pendiente"):
+        total[estado_zonas + "s"].append("zonas")
 
     print("\n" + "=" * 60)
     print("RESUMEN" + (" (solo verificacion)" if argumentos.solo_verificar else ""))
