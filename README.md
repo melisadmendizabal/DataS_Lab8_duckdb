@@ -117,9 +117,150 @@ debe permitir que una persona que no participo en el desarrollo pueda levantar e
 ambiente, descargar los datos, ejecutar el analisis, reproducir los benchmarks y
 generar los resultados principales.
 
+## Proposito de cada directorio
+
+| Directorio / archivo   | Proposito |
+|------------------------|-----------|
+| `data/raw/`            | Datos originales tal como los publica la TLC (Parquet mensuales en `data/raw/<tipo>/<anio>/`). No se modifican: son la fuente de verdad a partir de la cual se puede regenerar todo lo demas. |
+| `data/processed/`      | Resultados derivados de `raw/`: datos limpios o transformados, la base `.duckdb` materializada, tablas agregadas, etc. Se puede borrar y volver a generar con los scripts. |
+| `notebooks/`           | Notebooks de Jupyter para exploracion, analisis, indicadores y visualizaciones. |
+| `scripts/`             | Codigo Python reproducible y ejecutable desde la linea de comandos: descarga de datos, preparacion/transformacion y benchmarks. |
+| `sql/`                 | Consultas SQL de DuckDB versionadas como archivos `.sql`, para que queden documentadas y puedan reutilizarse desde notebooks, scripts o Metabase. |
+| `docs/`                | Documentacion del trabajo: explicacion de consultas y transformaciones, resultados de benchmarks y evidencia del tablero. |
+| `Dockerfile`           | Imagen del ambiente de analisis (Python 3.11 + JupyterLab + DuckDB + pandas/pyarrow/matplotlib). |
+| `metabase.Dockerfile`  | Imagen de Metabase con el driver de DuckDB, para construir tableros. |
+| `docker-compose.yml`   | Orquesta ambos servicios, sus puertos y los volumenes que montan las carpetas del proyecto dentro de los contenedores. |
+| `requirements.txt`     | Versiones fijas de las librerias de Python, para que el ambiente sea identico en cualquier maquina. |
+
+Los directorios `data/raw/` y `data/processed/` estan excluidos de Git en
+`.gitignore` (solo se versiona su `.gitkeep`), de modo que el repositorio guarda
+el *proceso* y no los datos.
+
 ## Como levantar el ambiente
 
-<!-- TODO (Ejercicio 1.5) -->
+### Requisitos previos
+
+- Docker Desktop (o Docker Engine) con Docker Compose v2. Verificar con:
+
+  ```bash
+  docker --version
+  docker compose version
+  ```
+
+- Al menos 10 GB de disco libres (ver seccion *Requisitos*).
+- Los puertos `8888` y `3000` libres en la maquina local.
+
+### Pasos
+
+1. Clonar el fork y entrar a la carpeta:
+
+   ```bash
+   git clone https://github.com/melisadmendizabal/DataS_Lab8_duckdb.git
+   cd DataS_Lab8_duckdb
+   ```
+
+2. Construir las imagenes y levantar los servicios en segundo plano:
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+   La primera vez tarda varios minutos (descarga la imagen de Python, las
+   librerias, Metabase y el driver de DuckDB). Las siguientes veces basta con
+   `docker compose up -d`.
+
+3. Verificar que ambos contenedores esten en estado `Up`:
+
+   ```bash
+   docker compose ps
+   ```
+
+   ```text
+   NAME            SERVICE    STATUS   PORTS
+   lab8-lab        lab        Up       127.0.0.1:8888->8888/tcp
+   lab8-metabase   metabase   Up       127.0.0.1:3000->3000/tcp
+   ```
+
+4. Abrir los servicios en el navegador:
+
+   | Servicio   | URL                     | Notas |
+   |------------|-------------------------|-------|
+   | JupyterLab | <http://localhost:8888> | Sin token ni contrasena (solo escucha en `127.0.0.1`). |
+   | Metabase   | <http://localhost:3000> | Tarda ~1 minuto en iniciar. La primera vez pide crear un usuario administrador. |
+
+5. Verificar el funcionamiento de los servicios:
+
+   ```bash
+   # DuckDB y librerias dentro del contenedor de analisis
+   docker exec lab8-lab python -c "import duckdb; print(duckdb.__version__, duckdb.sql('select 42').fetchone())"
+
+   # Salud de Metabase (debe responder {"status":"ok"})
+   curl http://localhost:3000/api/health
+   ```
+
+### Herramientas disponibles en el ambiente
+
+**Servicio `lab` (contenedor `lab8-lab`)** — imagen `python:3.11.14-slim` (Debian 13):
+
+| Herramienta  | Version | Uso |
+|--------------|---------|-----|
+| Python       | 3.11.14 | Lenguaje base de scripts y notebooks. |
+| JupyterLab   | 4.6.4   | Notebooks interactivos (puerto 8888). |
+| DuckDB       | 1.5.5   | Motor SQL analitico embebido (libreria de Python; no incluye el CLI `duckdb`). |
+| pandas       | 3.0.6   | Manipulacion de DataFrames. |
+| pyarrow      | 25.0.1  | Lectura/escritura de Parquet y formato Arrow. |
+| matplotlib   | 3.11.2  | Visualizaciones. |
+| requests     | 2.34.2  | Descarga HTTP de los archivos de la TLC. |
+| curl         | -       | Utilidad de linea de comandos para HTTP. |
+
+**Servicio `metabase` (contenedor `lab8-metabase`)** — imagen `eclipse-temurin:21-jre-jammy`:
+
+| Herramienta           | Version  | Uso |
+|-----------------------|----------|-----|
+| Metabase              | v0.63.19 | Herramienta de BI para tableros (puerto 3000). |
+| Driver DuckDB         | 1.5.5.0  | Permite a Metabase leer archivos `.duckdb` / Parquet. |
+| Java (OpenJDK)        | 21       | Runtime de Metabase. |
+
+Carpetas montadas en los contenedores:
+
+- `lab`: `data/`, `notebooks/`, `scripts/`, `sql/` y `docs/` en `/workspace/...`.
+  Los cambios hechos dentro del contenedor se reflejan en la carpeta local y viceversa.
+- `metabase`: `data/` en `/workspace/data` y un volumen de Docker
+  (`metabase-data`) donde Metabase guarda su configuracion, de modo que los
+  tableros sobreviven a reinicios del contenedor.
+
+### Comandos utiles
+
+```bash
+docker compose logs -f lab          # ver logs de Jupyter
+docker compose logs -f metabase     # ver logs de Metabase
+docker exec -it lab8-lab bash       # abrir una terminal dentro del ambiente
+docker compose stop                 # detener los servicios
+docker compose down                 # detener y eliminar contenedores (conserva datos y volumen)
+docker compose down -v              # ademas elimina el volumen de Metabase
+```
+
+### Por que un ambiente reproducible (Ejercicio 1.6)
+
+- **Mismos resultados en cualquier maquina.** Las versiones de Python, DuckDB,
+  pandas, Metabase y el driver estan fijadas en `requirements.txt` y en los
+  Dockerfiles. Cualquier integrante (o el docente) obtiene exactamente el mismo
+  software, por lo que las consultas y benchmarks producen los mismos resultados
+  y se evita el clasico "en mi maquina si funciona".
+- **Compatibilidad entre componentes.** El archivo `.duckdb` debe abrirse con la
+  misma version de DuckDB en Python y en el driver de Metabase; un ambiente
+  fijado garantiza esa alineacion.
+- **Independencia del sistema operativo.** El equipo puede trabajar en Windows,
+  macOS o Linux sin instalar ni configurar dependencias manualmente.
+- **Comparaciones de desempeno validas.** Para que los benchmarks sean
+  comparables, deben ejecutarse sobre el mismo motor y las mismas librerias.
+- **Trazabilidad y auditoria.** Codigo, consultas y configuracion del ambiente
+  quedan versionados en Git; los datos se regeneran con los scripts. Asi
+  cualquier resultado puede rastrearse y volver a producirse cuando lleguen
+  nuevos archivos de la TLC.
+- **Aislamiento.** Las dependencias del laboratorio no interfieren con otros
+  proyectos instalados en la computadora, y el ambiente se puede destruir y
+  reconstruir sin riesgo.
 
 ## Como descargar los datos
 
