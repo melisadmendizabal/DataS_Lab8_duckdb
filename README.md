@@ -267,7 +267,7 @@ docker compose down -v              # ademas elimina el volumen de Metabase
 Con el ambiente levantado, ejecutar el script dentro del contenedor `lab`:
 
 ```bash
-# Taxis amarillos y verdes de 2026 (todos los meses publicados a la fecha)
+# Taxis amarillos y verdes de 2024 y 2026 (todos los meses publicados a la fecha)
 docker exec lab8-lab python scripts/download_data.py
 ```
 
@@ -283,7 +283,7 @@ Opciones:
 | Opcion | Descripcion |
 |--------|-------------|
 | `--taxi {yellow,green,all}` | Tipo de taxi (por defecto `all`). |
-| `--anio 2026 [2025 ...]` | Uno o varios anios (por defecto `2026`). |
+| `--anio 2026 [2025 ...]` | Uno o varios anios (por defecto los de `ANIOS_POR_DEFECTO`: `2024 2026`). |
 | `--solo-verificar` | No descarga; compara lo local con el servidor y reporta archivos pendientes. |
 
 El script se puede ejecutar cuantas veces se quiera:
@@ -304,11 +304,16 @@ docker exec lab8-lab python scripts/download_data.py --solo-verificar
 
 El analisis del script original, los cambios realizados, las pruebas y la
 verificacion de completitud (Ejercicio 2) estan documentados en
-[`docs/descarga_datos.md`](docs/descarga_datos.md).
+[`docs/descarga_datos.md`](docs/descarga_datos.md). La incorporacion de 2024
+(Ejercicio 5) esta en
+[`docs/05_incorporacion_datos.md`](docs/05_incorporacion_datos.md): para
+agregar un anio basta con sumarlo a `ANIOS_POR_DEFECTO` en el script.
 
-> **Nota:** a partir de junio de 2026 los archivos incluyen la columna
-> `request_source`. Para leer varios meses juntos use
-> `read_parquet('data/raw/yellow/2026/*.parquet', union_by_name = true)`.
+> **Nota:** las columnas no son las mismas en todos los archivos
+> (`cbd_congestion_fee` existe desde 2025 y `request_source` desde 2026-06).
+> Para leer varios archivos juntos use siempre `union_by_name = true`, p. ej.
+> `read_parquet('data/raw/yellow/*/*.parquet', union_by_name = true)`; sin el,
+> DuckDB toma el esquema del primer archivo.
 
 ## Como ejecutar el analisis
 
@@ -340,6 +345,9 @@ docker exec -w /workspace/notebooks lab8-lab jupyter nbconvert --to notebook --e
 |-----------|-----------|----------|---------------|
 | 3 - Consultas directas sobre Parquet | `sql/03_exploracion/` | `notebooks/03_exploracion_parquet.ipynb` | [`docs/03_consultas_parquet.md`](docs/03_consultas_parquet.md) |
 | 4 - Analisis exploratorio | `sql/04_analisis/` | `notebooks/04_analisis_exploratorio.ipynb` | [`docs/04_analisis_exploratorio.md`](docs/04_analisis_exploratorio.md) (figuras en `docs/figuras/`) |
+| 5 - Incorporacion de 2024 | `sql/05_incorporacion/` | - | [`docs/05_incorporacion_datos.md`](docs/05_incorporacion_datos.md) |
+| 6 - Parquet vs tabla DuckDB | `sql/06_benchmark/` + 6 consultas de `sql/04_analisis/` | `notebooks/06_benchmark.ipynb` | [`docs/06_benchmark.md`](docs/06_benchmark.md) |
+| 7 - Indicadores | `sql/07_indicadores/` | `notebooks/07_indicadores.ipynb` | [`docs/07_indicadores.md`](docs/07_indicadores.md) |
 
 En el Ejercicio 4, `sql/04_analisis/00_vistas.sql` define las vistas
 temporales (`viajes`, `viajes_validos`, `zonas`, `metodos_pago`) que usan las
@@ -351,6 +359,37 @@ sola consulta, incluya las vistas:
 docker exec lab8-lab python scripts/run_sql.py sql/04_analisis/00_vistas.sql sql/04_analisis/07_viajes_aeropuerto.sql
 ```
 
+**Alcance de las vistas (`--periodo`).** Por defecto las vistas leen **todos
+los anios descargados**. El analisis documentado del Ejercicio 4 corresponde a
+2026; para reproducirlo exactamente (el notebook 04 ya lo hace):
+
+```bash
+docker exec lab8-lab python scripts/run_sql.py sql/04_analisis --periodo '2026/*'
+```
+
+`--periodo` es un patron de archivos relativo a `data/raw/<tipo>/` (p. ej.
+`'2024/*'` o `'2026/*2026-01'` para un solo mes).
+
+**Ejercicio 5** (validacion de la incorporacion de 2024; las consultas 05-08
+usan las vistas):
+
+```bash
+docker exec lab8-lab python scripts/run_sql.py sql/04_analisis/00_vistas.sql sql/05_incorporacion
+```
+
+**Base materializada.** Los Ejercicios 6 y 7 usan `data/processed/taxis.duckdb`,
+que se crea a partir de las mismas vistas (~25 s, ~2.2 GB):
+
+```bash
+docker exec lab8-lab python scripts/materializar.py
+# cualquier consulta de las vistas funciona tambien sobre la base:
+docker exec lab8-lab python scripts/run_sql.py sql/07_indicadores --base data/processed/taxis.duckdb
+```
+
+Si la base esta abierta por Metabase, `materializar.py` no puede reemplazarla:
+detenga Metabase (`docker compose stop metabase`), materialice y vuelva a
+iniciarlo (`docker compose start metabase`).
+
 > **Memoria:** `run_sql.py` limita DuckDB a 3 GB (`--memoria` para cambiarlo).
 > Con el limite por defecto (80% de la RAM del contenedor) algunas consultas
 > fallan con `Cannot allocate memory` porque Metabase comparte la memoria
@@ -358,8 +397,46 @@ docker exec lab8-lab python scripts/run_sql.py sql/04_analisis/00_vistas.sql sql
 
 ## Como reproducir los benchmarks
 
-<!-- TODO (Ejercicio 6) -->
+```bash
+docker exec lab8-lab python scripts/benchmark.py        # ~10 min; opciones: --repeticiones, --escalas
+docker exec -w /workspace/notebooks lab8-lab jupyter nbconvert --to notebook --execute --inplace 06_benchmark.ipynb
+```
+
+`benchmark.py` ejecuta 9 consultas sobre los Parquet y sobre una tabla
+materializada (base temporal `data/processed/benchmark.duckdb`, que se borra al
+terminar) en cuatro escalas de datos (1 mes, 3 meses, 2026, 2024 + 2026),
+verifica que ambas estrategias devuelvan el mismo resultado y guarda los
+tiempos en `docs/06_benchmark/`. El notebook 06 solo lee esos CSV y genera las
+tablas y figuras. Para resultados comparables, no ejecute otras consultas
+pesadas mientras corre. Analisis: [`docs/06_benchmark.md`](docs/06_benchmark.md).
 
 ## Como generar los resultados principales
 
-<!-- TODO -->
+### Indicadores y visualizaciones (Ejercicio 7)
+
+1. Materializar la base: `docker exec lab8-lab python scripts/materializar.py`.
+2. Crear un usuario administrador en Metabase (<http://localhost:3000>, solo
+   la primera vez) y guardar sus credenciales en un archivo `.env` en la raiz
+   del proyecto (esta en `.gitignore`):
+
+   ```text
+   MB_USER=<correo>
+   MB_PASSWORD=<contrasena>
+   ```
+
+3. Crear o actualizar las visualizaciones en Metabase:
+
+   ```bash
+   docker exec --env-file .env lab8-lab python scripts/metabase_indicadores.py
+   ```
+
+   Registra la base `taxis.duckdb` (solo lectura) y crea una pregunta por
+   indicador en la coleccion **Lab 8 - Indicadores**.
+
+4. Figuras versionadas de los mismos indicadores:
+
+   ```bash
+   docker exec -w /workspace/notebooks lab8-lab jupyter nbconvert --to notebook --execute --inplace 07_indicadores.ipynb
+   ```
+
+<!-- TODO (7.5 en adelante): tablero y resultados del Ejercicio 8 -->

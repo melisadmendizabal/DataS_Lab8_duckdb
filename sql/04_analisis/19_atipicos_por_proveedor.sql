@@ -12,7 +12,7 @@ WITH reglas AS (
     SELECT
         tipo,
         proveedor,
-        year(inicio) <> 2026                         AS "1 fecha fuera de 2026",
+        year(inicio) <> anio                         AS "1 fecha fuera del anio",
         fin <= inicio                                AS "2 duracion cero o negativa",
         fin - inicio > INTERVAL 24 HOUR              AS "3 duracion mayor a 24 h",
         distancia = 0                                AS "4 distancia cero",

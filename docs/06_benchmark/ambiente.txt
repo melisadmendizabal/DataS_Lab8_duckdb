@@ -1,0 +1,6 @@
+fecha: 2026-10-08 05:29
+duckdb: 1.5.5
+python: 3.11.14
+hilos: 24
+memory_limit: 3GB
+repeticiones: 3 (+1 primera ejecucion)

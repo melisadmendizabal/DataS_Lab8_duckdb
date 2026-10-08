@@ -2,16 +2,18 @@
 """Descarga los archivos Parquet del NYC TLC Trip Record Data.
 
 Descarga los registros de viajes de taxis amarillos (yellow) y verdes (green).
-Por defecto descarga el anio 2026, que es el conjunto de datos inicial del
-laboratorio; con --anio se pueden indicar otros anios.
+Por defecto descarga los anios que usa el laboratorio (ANIOS_POR_DEFECTO):
+2026, el conjunto inicial, y 2024, incorporado en el Ejercicio 5. Con --anio
+se pueden indicar otros anios.
 
 Fuente oficial de los datos:
     https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 
 Uso:
-    python scripts/download_data.py                     # amarillos y verdes, 2026
+    python scripts/download_data.py                     # amarillos y verdes, 2024 y 2026
     python scripts/download_data.py --taxi yellow
     python scripts/download_data.py --taxi green
+    python scripts/download_data.py --anio 2026         # solo un anio
     python scripts/download_data.py --anio 2024 2025    # otros anios
     python scripts/download_data.py --solo-verificar    # no descarga, solo compara
 
@@ -47,7 +49,9 @@ from pathlib import Path
 import pyarrow.parquet as pq
 import requests
 
-ANIO_POR_DEFECTO = 2026
+# Anios del laboratorio. Para incorporar un anio nuevo basta con agregarlo
+# aqui: los archivos ya descargados de los demas anios se omiten.
+ANIOS_POR_DEFECTO = (2024, 2026)
 TIPOS_TAXI = ("yellow", "green")
 URL_BASE = "https://d37ci6vzurychx.cloudfront.net/trip-data"
 RAIZ_PROYECTO = Path(__file__).resolve().parent.parent
@@ -340,8 +344,8 @@ def main() -> int:
         help="tipo de taxi a descargar (por defecto: all)",
     )
     parser.add_argument(
-        "--anio", type=int, nargs="+", default=[ANIO_POR_DEFECTO],
-        help=f"anio o anios a descargar (por defecto: {ANIO_POR_DEFECTO})",
+        "--anio", type=int, nargs="+", default=list(ANIOS_POR_DEFECTO),
+        help=f"anio o anios a descargar (por defecto: {' '.join(map(str, ANIOS_POR_DEFECTO))})",
     )
     parser.add_argument(
         "--solo-verificar", action="store_true",
@@ -350,6 +354,7 @@ def main() -> int:
     argumentos = parser.parse_args()
 
     tipos = TIPOS_TAXI if argumentos.taxi == "all" else (argumentos.taxi,)
+    argumentos.anio = sorted(set(argumentos.anio))
 
     total = resumen_vacio()
     huecos = []

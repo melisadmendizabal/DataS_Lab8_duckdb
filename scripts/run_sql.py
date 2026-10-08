@@ -11,6 +11,7 @@ Uso:
     python scripts/run_sql.py sql/03_exploracion/01_*.sql         # algunos archivos
     python scripts/run_sql.py sql/03_exploracion --filas 50       # mas filas por resultado
     python scripts/run_sql.py sql/03_exploracion --memoria 2GB
+    python scripts/run_sql.py sql/04_analisis --periodo '2026/*'  # solo 2026
 
 Las rutas dentro de las consultas (p. ej. 'data/raw/...') son relativas a la
 raiz del proyecto; el script cambia a ese directorio antes de ejecutarlas.
@@ -32,11 +33,19 @@ RAIZ_PROYECTO = Path(__file__).resolve().parent.parent
 MEMORIA_POR_DEFECTO = "3GB"
 
 
-def conectar(memoria: str = MEMORIA_POR_DEFECTO) -> duckdb.DuckDBPyConnection:
-    """Conexion en memoria configurada para el ambiente del laboratorio."""
+def conectar(memoria: str = MEMORIA_POR_DEFECTO, periodo: str = None,
+             base: str = ":memory:", solo_lectura: bool = False) -> duckdb.DuckDBPyConnection:
+    """Conexion configurada para el ambiente del laboratorio.
+
+    `periodo` define la variable que usa sql/04_analisis/00_vistas.sql para
+    elegir los archivos (p. ej. '2026/*'); sin el, se leen todos los anios.
+    `base` permite abrir una base .duckdb en lugar de una en memoria.
+    """
     os.chdir(RAIZ_PROYECTO)
-    con = duckdb.connect()
+    con = duckdb.connect(base, read_only=solo_lectura)
     con.execute(f"SET memory_limit = '{memoria}'")
+    if periodo:
+        con.execute("SET VARIABLE periodo = ?", [periodo])
     try:
         con.execute("SET enable_progress_bar = false")
     except duckdb.Error:
@@ -71,10 +80,17 @@ def main() -> int:
     parser.add_argument("--filas", type=int, default=40, help="filas maximas a mostrar (por defecto 40)")
     parser.add_argument("--memoria", default=MEMORIA_POR_DEFECTO,
                         help=f"limite de memoria de DuckDB (por defecto {MEMORIA_POR_DEFECTO})")
+    parser.add_argument("--periodo",
+                        help="patron de archivos para las vistas de 00_vistas.sql, relativo a "
+                             "data/raw/<tipo>/ (p. ej. '2026/*'); por defecto todos los anios")
+    parser.add_argument("--base", default=":memory:",
+                        help="base .duckdb sobre la que se ejecutan las consultas, en solo "
+                             "lectura (por defecto una base en memoria)")
     argumentos = parser.parse_args()
 
     archivos = expandir(argumentos.rutas)
-    con = conectar(argumentos.memoria)
+    con = conectar(argumentos.memoria, argumentos.periodo, argumentos.base,
+                   solo_lectura=argumentos.base != ":memory:")
 
     errores = 0
     for archivo in archivos:

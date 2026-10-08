@@ -1,0 +1,289 @@
+escala,filas,estrategia,consulta,nombre,ejecucion,segundos
+1mes,3765161,parquet,B1,Conteo por mes,primera,0.1503
+1mes,3765161,parquet,B1,Conteo por mes,repetida,0.0673
+1mes,3765161,parquet,B1,Conteo por mes,repetida,0.0649
+1mes,3765161,parquet,B1,Conteo por mes,repetida,0.0673
+1mes,3765161,parquet,B2,Consulta selectiva,primera,0.1479
+1mes,3765161,parquet,B2,Consulta selectiva,repetida,0.2014
+1mes,3765161,parquet,B2,Consulta selectiva,repetida,0.2481
+1mes,3765161,parquet,B2,Consulta selectiva,repetida,0.165
+1mes,3765161,parquet,B3,Todas las columnas,primera,0.3789
+1mes,3765161,parquet,B3,Todas las columnas,repetida,0.3957
+1mes,3765161,parquet,B3,Todas las columnas,repetida,0.5289
+1mes,3765161,parquet,B3,Todas las columnas,repetida,0.4248
+1mes,3765161,parquet,B4,Dia de la semana,primera,0.3234
+1mes,3765161,parquet,B4,Dia de la semana,repetida,0.3034
+1mes,3765161,parquet,B4,Dia de la semana,repetida,0.2872
+1mes,3765161,parquet,B4,Dia de la semana,repetida,0.239
+1mes,3765161,parquet,B5,Mapa de calor dia x hora,primera,0.3703
+1mes,3765161,parquet,B5,Mapa de calor dia x hora,repetida,0.4722
+1mes,3765161,parquet,B5,Mapa de calor dia x hora,repetida,0.5201
+1mes,3765161,parquet,B5,Mapa de calor dia x hora,repetida,0.3705
+1mes,3765161,parquet,B6,Zonas principales,primera,0.5216
+1mes,3765161,parquet,B6,Zonas principales,repetida,0.4888
+1mes,3765161,parquet,B6,Zonas principales,repetida,0.5238
+1mes,3765161,parquet,B6,Zonas principales,repetida,0.5422
+1mes,3765161,parquet,B7,Propina por metodo,primera,0.5274
+1mes,3765161,parquet,B7,Propina por metodo,repetida,0.7338
+1mes,3765161,parquet,B7,Propina por metodo,repetida,1.1233
+1mes,3765161,parquet,B7,Propina por metodo,repetida,0.4953
+1mes,3765161,parquet,B8,Tarifa por milla,primera,0.4806
+1mes,3765161,parquet,B8,Tarifa por milla,repetida,0.5382
+1mes,3765161,parquet,B8,Tarifa por milla,repetida,0.4384
+1mes,3765161,parquet,B8,Tarifa por milla,repetida,0.4421
+1mes,3765161,parquet,B9,Atipicos por proveedor,primera,0.5433
+1mes,3765161,parquet,B9,Atipicos por proveedor,repetida,0.5992
+1mes,3765161,parquet,B9,Atipicos por proveedor,repetida,0.6827
+1mes,3765161,parquet,B9,Atipicos por proveedor,repetida,0.6882
+1mes,3765161,tabla,B1,Conteo por mes,primera,0.0411
+1mes,3765161,tabla,B1,Conteo por mes,repetida,0.0125
+1mes,3765161,tabla,B1,Conteo por mes,repetida,0.0126
+1mes,3765161,tabla,B1,Conteo por mes,repetida,0.0125
+1mes,3765161,tabla,B2,Consulta selectiva,primera,0.0365
+1mes,3765161,tabla,B2,Consulta selectiva,repetida,0.0048
+1mes,3765161,tabla,B2,Consulta selectiva,repetida,0.0044
+1mes,3765161,tabla,B2,Consulta selectiva,repetida,0.0043
+1mes,3765161,tabla,B3,Todas las columnas,primera,0.3441
+1mes,3765161,tabla,B3,Todas las columnas,repetida,0.0791
+1mes,3765161,tabla,B3,Todas las columnas,repetida,0.0698
+1mes,3765161,tabla,B3,Todas las columnas,repetida,0.0807
+1mes,3765161,tabla,B4,Dia de la semana,primera,0.0637
+1mes,3765161,tabla,B4,Dia de la semana,repetida,0.0616
+1mes,3765161,tabla,B4,Dia de la semana,repetida,0.0644
+1mes,3765161,tabla,B4,Dia de la semana,repetida,0.0637
+1mes,3765161,tabla,B5,Mapa de calor dia x hora,primera,0.0675
+1mes,3765161,tabla,B5,Mapa de calor dia x hora,repetida,0.0659
+1mes,3765161,tabla,B5,Mapa de calor dia x hora,repetida,0.064
+1mes,3765161,tabla,B5,Mapa de calor dia x hora,repetida,0.0689
+1mes,3765161,tabla,B6,Zonas principales,primera,0.0683
+1mes,3765161,tabla,B6,Zonas principales,repetida,0.0619
+1mes,3765161,tabla,B6,Zonas principales,repetida,0.0609
+1mes,3765161,tabla,B6,Zonas principales,repetida,0.0644
+1mes,3765161,tabla,B7,Propina por metodo,primera,0.1828
+1mes,3765161,tabla,B7,Propina por metodo,repetida,0.1633
+1mes,3765161,tabla,B7,Propina por metodo,repetida,0.1795
+1mes,3765161,tabla,B7,Propina por metodo,repetida,0.1941
+1mes,3765161,tabla,B8,Tarifa por milla,primera,0.1105
+1mes,3765161,tabla,B8,Tarifa por milla,repetida,0.1196
+1mes,3765161,tabla,B8,Tarifa por milla,repetida,0.1399
+1mes,3765161,tabla,B8,Tarifa por milla,repetida,0.118
+1mes,3765161,tabla,B9,Atipicos por proveedor,primera,0.1513
+1mes,3765161,tabla,B9,Atipicos por proveedor,repetida,0.1542
+1mes,3765161,tabla,B9,Atipicos por proveedor,repetida,0.1536
+1mes,3765161,tabla,B9,Atipicos por proveedor,repetida,0.1514
+3meses,11199059,parquet,B1,Conteo por mes,primera,0.141
+3meses,11199059,parquet,B1,Conteo por mes,repetida,0.174
+3meses,11199059,parquet,B1,Conteo por mes,repetida,0.181
+3meses,11199059,parquet,B1,Conteo por mes,repetida,0.1843
+3meses,11199059,parquet,B2,Consulta selectiva,primera,0.2601
+3meses,11199059,parquet,B2,Consulta selectiva,repetida,0.2073
+3meses,11199059,parquet,B2,Consulta selectiva,repetida,0.232
+3meses,11199059,parquet,B2,Consulta selectiva,repetida,0.2392
+3meses,11199059,parquet,B3,Todas las columnas,primera,0.9374
+3meses,11199059,parquet,B3,Todas las columnas,repetida,0.8806
+3meses,11199059,parquet,B3,Todas las columnas,repetida,0.9341
+3meses,11199059,parquet,B3,Todas las columnas,repetida,1.0052
+3meses,11199059,parquet,B4,Dia de la semana,primera,0.6408
+3meses,11199059,parquet,B4,Dia de la semana,repetida,0.6639
+3meses,11199059,parquet,B4,Dia de la semana,repetida,0.6601
+3meses,11199059,parquet,B4,Dia de la semana,repetida,0.655
+3meses,11199059,parquet,B5,Mapa de calor dia x hora,primera,0.7752
+3meses,11199059,parquet,B5,Mapa de calor dia x hora,repetida,0.7156
+3meses,11199059,parquet,B5,Mapa de calor dia x hora,repetida,0.695
+3meses,11199059,parquet,B5,Mapa de calor dia x hora,repetida,0.6938
+3meses,11199059,parquet,B6,Zonas principales,primera,1.1932
+3meses,11199059,parquet,B6,Zonas principales,repetida,1.1713
+3meses,11199059,parquet,B6,Zonas principales,repetida,1.2413
+3meses,11199059,parquet,B6,Zonas principales,repetida,1.1607
+3meses,11199059,parquet,B7,Propina por metodo,primera,1.184
+3meses,11199059,parquet,B7,Propina por metodo,repetida,1.1153
+3meses,11199059,parquet,B7,Propina por metodo,repetida,1.1057
+3meses,11199059,parquet,B7,Propina por metodo,repetida,1.5377
+3meses,11199059,parquet,B8,Tarifa por milla,primera,0.9398
+3meses,11199059,parquet,B8,Tarifa por milla,repetida,0.8926
+3meses,11199059,parquet,B8,Tarifa por milla,repetida,1.0658
+3meses,11199059,parquet,B8,Tarifa por milla,repetida,0.9782
+3meses,11199059,parquet,B9,Atipicos por proveedor,primera,0.9275
+3meses,11199059,parquet,B9,Atipicos por proveedor,repetida,0.9711
+3meses,11199059,parquet,B9,Atipicos por proveedor,repetida,0.958
+3meses,11199059,parquet,B9,Atipicos por proveedor,repetida,0.9516
+3meses,11199059,tabla,B1,Conteo por mes,primera,0.0931
+3meses,11199059,tabla,B1,Conteo por mes,repetida,0.0305
+3meses,11199059,tabla,B1,Conteo por mes,repetida,0.0314
+3meses,11199059,tabla,B1,Conteo por mes,repetida,0.0326
+3meses,11199059,tabla,B2,Consulta selectiva,primera,0.0382
+3meses,11199059,tabla,B2,Consulta selectiva,repetida,0.0047
+3meses,11199059,tabla,B2,Consulta selectiva,repetida,0.0047
+3meses,11199059,tabla,B2,Consulta selectiva,repetida,0.0036
+3meses,11199059,tabla,B3,Todas las columnas,primera,0.917
+3meses,11199059,tabla,B3,Todas las columnas,repetida,0.2121
+3meses,11199059,tabla,B3,Todas las columnas,repetida,0.2004
+3meses,11199059,tabla,B3,Todas las columnas,repetida,0.2083
+3meses,11199059,tabla,B4,Dia de la semana,primera,0.1659
+3meses,11199059,tabla,B4,Dia de la semana,repetida,0.1877
+3meses,11199059,tabla,B4,Dia de la semana,repetida,0.1834
+3meses,11199059,tabla,B4,Dia de la semana,repetida,0.1754
+3meses,11199059,tabla,B5,Mapa de calor dia x hora,primera,0.201
+3meses,11199059,tabla,B5,Mapa de calor dia x hora,repetida,0.1746
+3meses,11199059,tabla,B5,Mapa de calor dia x hora,repetida,0.177
+3meses,11199059,tabla,B5,Mapa de calor dia x hora,repetida,0.179
+3meses,11199059,tabla,B6,Zonas principales,primera,0.1793
+3meses,11199059,tabla,B6,Zonas principales,repetida,0.1718
+3meses,11199059,tabla,B6,Zonas principales,repetida,0.1612
+3meses,11199059,tabla,B6,Zonas principales,repetida,0.162
+3meses,11199059,tabla,B7,Propina por metodo,primera,0.5754
+3meses,11199059,tabla,B7,Propina por metodo,repetida,0.5292
+3meses,11199059,tabla,B7,Propina por metodo,repetida,0.4913
+3meses,11199059,tabla,B7,Propina por metodo,repetida,0.5337
+3meses,11199059,tabla,B8,Tarifa por milla,primera,0.4049
+3meses,11199059,tabla,B8,Tarifa por milla,repetida,0.4234
+3meses,11199059,tabla,B8,Tarifa por milla,repetida,0.3891
+3meses,11199059,tabla,B8,Tarifa por milla,repetida,0.4371
+3meses,11199059,tabla,B9,Atipicos por proveedor,primera,0.3175
+3meses,11199059,tabla,B9,Atipicos por proveedor,repetida,0.33
+3meses,11199059,tabla,B9,Atipicos por proveedor,repetida,0.3243
+3meses,11199059,tabla,B9,Atipicos por proveedor,repetida,0.3366
+2026,30040469,parquet,B1,Conteo por mes,primera,0.4193
+2026,30040469,parquet,B1,Conteo por mes,repetida,0.3512
+2026,30040469,parquet,B1,Conteo por mes,repetida,0.3761
+2026,30040469,parquet,B1,Conteo por mes,repetida,0.3496
+2026,30040469,parquet,B2,Consulta selectiva,primera,0.701
+2026,30040469,parquet,B2,Consulta selectiva,repetida,0.6643
+2026,30040469,parquet,B2,Consulta selectiva,repetida,0.6217
+2026,30040469,parquet,B2,Consulta selectiva,repetida,0.9151
+2026,30040469,parquet,B3,Todas las columnas,primera,3.9285
+2026,30040469,parquet,B3,Todas las columnas,repetida,3.3287
+2026,30040469,parquet,B3,Todas las columnas,repetida,3.5625
+2026,30040469,parquet,B3,Todas las columnas,repetida,3.5579
+2026,30040469,parquet,B4,Dia de la semana,primera,1.9774
+2026,30040469,parquet,B4,Dia de la semana,repetida,1.8186
+2026,30040469,parquet,B4,Dia de la semana,repetida,2.1693
+2026,30040469,parquet,B4,Dia de la semana,repetida,2.4601
+2026,30040469,parquet,B5,Mapa de calor dia x hora,primera,2.53
+2026,30040469,parquet,B5,Mapa de calor dia x hora,repetida,1.9502
+2026,30040469,parquet,B5,Mapa de calor dia x hora,repetida,2.0251
+2026,30040469,parquet,B5,Mapa de calor dia x hora,repetida,2.0501
+2026,30040469,parquet,B6,Zonas principales,primera,4.2339
+2026,30040469,parquet,B6,Zonas principales,repetida,3.8064
+2026,30040469,parquet,B6,Zonas principales,repetida,4.0047
+2026,30040469,parquet,B6,Zonas principales,repetida,3.7795
+2026,30040469,parquet,B7,Propina por metodo,primera,3.013
+2026,30040469,parquet,B7,Propina por metodo,repetida,3.2364
+2026,30040469,parquet,B7,Propina por metodo,repetida,2.9522
+2026,30040469,parquet,B7,Propina por metodo,repetida,3.1563
+2026,30040469,parquet,B8,Tarifa por milla,primera,2.5745
+2026,30040469,parquet,B8,Tarifa por milla,repetida,2.4699
+2026,30040469,parquet,B8,Tarifa por milla,repetida,2.6366
+2026,30040469,parquet,B8,Tarifa por milla,repetida,2.5182
+2026,30040469,parquet,B9,Atipicos por proveedor,primera,2.4062
+2026,30040469,parquet,B9,Atipicos por proveedor,repetida,2.3495
+2026,30040469,parquet,B9,Atipicos por proveedor,repetida,2.3153
+2026,30040469,parquet,B9,Atipicos por proveedor,repetida,2.2132
+2026,30040469,tabla,B1,Conteo por mes,primera,0.2399
+2026,30040469,tabla,B1,Conteo por mes,repetida,0.0694
+2026,30040469,tabla,B1,Conteo por mes,repetida,0.0773
+2026,30040469,tabla,B1,Conteo por mes,repetida,0.0723
+2026,30040469,tabla,B2,Consulta selectiva,primera,0.0635
+2026,30040469,tabla,B2,Consulta selectiva,repetida,0.0047
+2026,30040469,tabla,B2,Consulta selectiva,repetida,0.0054
+2026,30040469,tabla,B2,Consulta selectiva,repetida,0.0044
+2026,30040469,tabla,B3,Todas las columnas,primera,2.5233
+2026,30040469,tabla,B3,Todas las columnas,repetida,0.5411
+2026,30040469,tabla,B3,Todas las columnas,repetida,0.5643
+2026,30040469,tabla,B3,Todas las columnas,repetida,0.5217
+2026,30040469,tabla,B4,Dia de la semana,primera,0.4261
+2026,30040469,tabla,B4,Dia de la semana,repetida,0.4224
+2026,30040469,tabla,B4,Dia de la semana,repetida,0.4118
+2026,30040469,tabla,B4,Dia de la semana,repetida,0.415
+2026,30040469,tabla,B5,Mapa de calor dia x hora,primera,0.5719
+2026,30040469,tabla,B5,Mapa de calor dia x hora,repetida,0.4241
+2026,30040469,tabla,B5,Mapa de calor dia x hora,repetida,0.4195
+2026,30040469,tabla,B5,Mapa de calor dia x hora,repetida,0.4186
+2026,30040469,tabla,B6,Zonas principales,primera,0.3986
+2026,30040469,tabla,B6,Zonas principales,repetida,0.4758
+2026,30040469,tabla,B6,Zonas principales,repetida,0.4293
+2026,30040469,tabla,B6,Zonas principales,repetida,0.4214
+2026,30040469,tabla,B7,Propina por metodo,primera,1.455
+2026,30040469,tabla,B7,Propina por metodo,repetida,1.3589
+2026,30040469,tabla,B7,Propina por metodo,repetida,1.2882
+2026,30040469,tabla,B7,Propina por metodo,repetida,1.2446
+2026,30040469,tabla,B8,Tarifa por milla,primera,1.1765
+2026,30040469,tabla,B8,Tarifa por milla,repetida,1.2249
+2026,30040469,tabla,B8,Tarifa por milla,repetida,1.2306
+2026,30040469,tabla,B8,Tarifa por milla,repetida,1.3851
+2026,30040469,tabla,B9,Atipicos por proveedor,primera,0.875
+2026,30040469,tabla,B9,Atipicos por proveedor,repetida,0.868
+2026,30040469,tabla,B9,Atipicos por proveedor,repetida,0.9166
+2026,30040469,tabla,B9,Atipicos por proveedor,repetida,0.9577
+todo,71870407,parquet,B1,Conteo por mes,primera,0.9697
+todo,71870407,parquet,B1,Conteo por mes,repetida,0.7135
+todo,71870407,parquet,B1,Conteo por mes,repetida,0.7975
+todo,71870407,parquet,B1,Conteo por mes,repetida,0.8135
+todo,71870407,parquet,B2,Consulta selectiva,primera,1.4957
+todo,71870407,parquet,B2,Consulta selectiva,repetida,1.5945
+todo,71870407,parquet,B2,Consulta selectiva,repetida,1.4093
+todo,71870407,parquet,B2,Consulta selectiva,repetida,1.4909
+todo,71870407,parquet,B3,Todas las columnas,primera,6.183
+todo,71870407,parquet,B3,Todas las columnas,repetida,5.4775
+todo,71870407,parquet,B3,Todas las columnas,repetida,5.4947
+todo,71870407,parquet,B3,Todas las columnas,repetida,5.4683
+todo,71870407,parquet,B4,Dia de la semana,primera,3.5411
+todo,71870407,parquet,B4,Dia de la semana,repetida,3.8982
+todo,71870407,parquet,B4,Dia de la semana,repetida,3.6686
+todo,71870407,parquet,B4,Dia de la semana,repetida,3.6466
+todo,71870407,parquet,B5,Mapa de calor dia x hora,primera,4.3937
+todo,71870407,parquet,B5,Mapa de calor dia x hora,repetida,4.4167
+todo,71870407,parquet,B5,Mapa de calor dia x hora,repetida,4.3707
+todo,71870407,parquet,B5,Mapa de calor dia x hora,repetida,4.187
+todo,71870407,parquet,B6,Zonas principales,primera,8.1368
+todo,71870407,parquet,B6,Zonas principales,repetida,8.4087
+todo,71870407,parquet,B6,Zonas principales,repetida,8.3387
+todo,71870407,parquet,B6,Zonas principales,repetida,8.1465
+todo,71870407,parquet,B7,Propina por metodo,primera,6.7733
+todo,71870407,parquet,B7,Propina por metodo,repetida,7.2529
+todo,71870407,parquet,B7,Propina por metodo,repetida,6.8531
+todo,71870407,parquet,B7,Propina por metodo,repetida,7.5472
+todo,71870407,parquet,B8,Tarifa por milla,primera,5.2716
+todo,71870407,parquet,B8,Tarifa por milla,repetida,5.2844
+todo,71870407,parquet,B8,Tarifa por milla,repetida,5.1824
+todo,71870407,parquet,B8,Tarifa por milla,repetida,5.4312
+todo,71870407,parquet,B9,Atipicos por proveedor,primera,4.4818
+todo,71870407,parquet,B9,Atipicos por proveedor,repetida,4.5226
+todo,71870407,parquet,B9,Atipicos por proveedor,repetida,4.9273
+todo,71870407,parquet,B9,Atipicos por proveedor,repetida,4.7496
+todo,71870407,tabla,B1,Conteo por mes,primera,0.602
+todo,71870407,tabla,B1,Conteo por mes,repetida,0.1313
+todo,71870407,tabla,B1,Conteo por mes,repetida,0.1406
+todo,71870407,tabla,B1,Conteo por mes,repetida,0.1659
+todo,71870407,tabla,B2,Consulta selectiva,primera,0.0745
+todo,71870407,tabla,B2,Consulta selectiva,repetida,0.0067
+todo,71870407,tabla,B2,Consulta selectiva,repetida,0.0069
+todo,71870407,tabla,B2,Consulta selectiva,repetida,0.0067
+todo,71870407,tabla,B3,Todas las columnas,primera,6.7214
+todo,71870407,tabla,B3,Todas las columnas,repetida,1.4354
+todo,71870407,tabla,B3,Todas las columnas,repetida,1.3735
+todo,71870407,tabla,B3,Todas las columnas,repetida,1.2648
+todo,71870407,tabla,B4,Dia de la semana,primera,0.9225
+todo,71870407,tabla,B4,Dia de la semana,repetida,0.8937
+todo,71870407,tabla,B4,Dia de la semana,repetida,0.9909
+todo,71870407,tabla,B4,Dia de la semana,repetida,1.0708
+todo,71870407,tabla,B5,Mapa de calor dia x hora,primera,2.5557
+todo,71870407,tabla,B5,Mapa de calor dia x hora,repetida,4.162
+todo,71870407,tabla,B5,Mapa de calor dia x hora,repetida,3.569
+todo,71870407,tabla,B5,Mapa de calor dia x hora,repetida,3.3932
+todo,71870407,tabla,B6,Zonas principales,primera,3.6309
+todo,71870407,tabla,B6,Zonas principales,repetida,0.9228
+todo,71870407,tabla,B6,Zonas principales,repetida,0.9719
+todo,71870407,tabla,B6,Zonas principales,repetida,0.9667
+todo,71870407,tabla,B7,Propina por metodo,primera,3.5566
+todo,71870407,tabla,B7,Propina por metodo,repetida,3.0049
+todo,71870407,tabla,B7,Propina por metodo,repetida,3.4072
+todo,71870407,tabla,B7,Propina por metodo,repetida,3.3123
+todo,71870407,tabla,B8,Tarifa por milla,primera,3.3644
+todo,71870407,tabla,B8,Tarifa por milla,repetida,3.0844
+todo,71870407,tabla,B8,Tarifa por milla,repetida,3.1957
+todo,71870407,tabla,B8,Tarifa por milla,repetida,2.8725
+todo,71870407,tabla,B9,Atipicos por proveedor,primera,2.0081
+todo,71870407,tabla,B9,Atipicos por proveedor,repetida,1.9346
+todo,71870407,tabla,B9,Atipicos por proveedor,repetida,1.9553
+todo,71870407,tabla,B9,Atipicos por proveedor,repetida,1.8954
