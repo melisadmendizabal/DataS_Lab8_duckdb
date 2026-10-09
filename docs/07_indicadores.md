@@ -220,10 +220,48 @@ de Helix con duracion cero (Ejercicio 5); en green baja (de ~5.5% a ~3.5-4.6%).
 
 ---
 
-## Pendiente (7.5 - 7.8)
+## 7.5 Tablero de analisis conjunto
 
-- **7.5** Organizar las 11 preguntas en un tablero de Metabase y guardar la
-  evidencia (capturas) en `docs/figuras/`.
+El tablero **Lab 8 - Ejercicio 7 - Analisis conjunto** se guarda en la
+coleccion **Lab 8 - Indicadores**. En el ambiente local actual esta disponible
+en <http://localhost:3000/dashboard/2> (el ID puede cambiar en otro ambiente).
+Reune las 11 preguntas existentes del 7.4, sin recrearlas ni modificar sus
+consultas o configuraciones.
+
+Una sola pagina, con cinco encabezados y una cuadricula de 24 columnas,
+permite recorrer los resultados desde la demanda hasta la calidad de datos:
+
+| Seccion | Indicadores | Distribucion |
+|---------|-------------|--------------|
+| Demanda y evolucion temporal | I1, I2, I7 | I1 e I2 lado a lado; I7 debajo a ancho completo. |
+| Precio y pago | I3, I4, I5, I6 | I3 e I4 lado a lado; I5 e I6 en la fila siguiente. |
+| Operacion | I8 | Ancho completo para comparar las curvas por hora y anio. |
+| Geografia y segmentos | I9, I10 | Lado a lado, con mayor altura para los nombres de las zonas. |
+| Calidad de datos | I11 | Ancho completo al final, como contexto para interpretar los otros indicadores. |
+
+La proximidad de indicadores relacionados facilita comparar volumen y
+variacion, costo y componentes del cobro, metodos de pago y propinas, y
+participacion geografica y peso de los aeropuertos. Se conservan los nombres,
+unidades, series y criterios de comparacion del 7.4; el tablero no agrega
+filtros ni cambia la definicion de los indicadores.
+
+Para reproducir exclusivamente el 7.5, con Metabase levantado, las 11
+preguntas disponibles y las credenciales de administrador en `.env`:
+
+```bash
+docker exec --env-file .env lab8-lab python scripts/metabase_indicadores.py --solo-tablero
+```
+
+La opcion `--solo-tablero` busca las preguntas por su nombre exacto y crea
+o actualiza el tablero por nombre dentro de la coleccion. Reutiliza los IDs
+de las preguntas y de las tarjetas del tablero en ejecuciones posteriores.
+Si faltan preguntas, hay nombres duplicados o el tablero contiene elementos
+ajenos a esta distribucion, se detiene antes de modificarlo. Al terminar,
+consulta el tablero guardado y verifica que incluya exactamente I1-I11 una
+vez cada uno. La ejecucion sin esta opcion conserva el flujo del 7.4.
+
+## Pendiente (7.6 - 7.8)
+
 - **7.6** Ampliar la justificacion de cada indicador (la columna "Por que este
   indicador" de 7.2 es el punto de partida).
 - **7.7** Las consultas ya estan documentadas en `sql/07_indicadores/` (7.3).

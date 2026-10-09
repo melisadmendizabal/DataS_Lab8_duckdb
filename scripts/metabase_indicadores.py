@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Crea en Metabase las visualizaciones de los indicadores (Ejercicio 7.4).
+"""Crea en Metabase las visualizaciones (7.4) o el tablero (7.5).
 
 Las preguntas (cards) de Metabase se guardan en su volumen de Docker, no en
 el repositorio. Este script las genera a partir de los archivos versionados
@@ -18,6 +18,10 @@ materializada con scripts/materializar.py):
 
     docker exec --env-file .env lab8-lab python scripts/metabase_indicadores.py
 
+Solo tablero 7.5, reutilizando las 11 preguntas existentes sin modificarlas:
+
+    docker exec --env-file .env lab8-lab python scripts/metabase_indicadores.py --solo-tablero
+
 Variables de entorno:
     MB_USER, MB_PASSWORD   usuario de Metabase (archivo .env, no versionado)
     MB_URL                 por defecto http://metabase:3000 (red de Docker Compose)
@@ -25,6 +29,7 @@ Variables de entorno:
 Solo usa la libreria estandar de Python.
 """
 
+import argparse
 import json
 import os
 import sys
@@ -39,6 +44,7 @@ NOMBRE_BASE = "Taxis NYC (DuckDB)"
 # Ruta de la base dentro del contenedor de Metabase (data/ esta montada ahi).
 ARCHIVO_BASE = "/workspace/data/processed/taxis.duckdb"
 NOMBRE_COLECCION = "Lab 8 - Indicadores"
+NOMBRE_TABLERO = "Lab 8 - Ejercicio 7 - Analisis conjunto"
 # Direccion para abrir los enlaces desde el navegador del host.
 URL_NAVEGADOR = "http://localhost:3000"
 
@@ -168,13 +174,114 @@ def descripcion(ruta: Path) -> str:
     return "\n".join(lineas[1:]) + f"\n\nConsulta: sql/07_indicadores/{ruta.name}"
 
 
+def elementos_coleccion(mb, id_coleccion, modelo):
+    """Lee todas las paginas de la coleccion, sin depender del limite de la API."""
+    elementos, offset = [], 0
+    while True:
+        pagina = mb.pedir("GET", f"/api/collection/{id_coleccion}/items"
+                          f"?models={modelo}&limit=100&offset={offset}")
+        lote = pagina["data"]
+        elementos.extend(lote)
+        offset += len(lote)
+        if not lote or offset >= pagina.get("total", offset):
+            return elementos
+
+
+def crear_tablero(mb):
+    """7.5: reutiliza las preguntas existentes; nunca crea ni modifica cards."""
+    colecciones = [c for c in mb.pedir("GET", "/api/collection")
+                   if c.get("name") == NOMBRE_COLECCION and not c.get("archived")]
+    if len(colecciones) != 1:
+        raise RuntimeError("Se esperaba una unica coleccion Lab 8 - Indicadores.")
+    id_coleccion = colecciones[0]["id"]
+    preguntas = elementos_coleccion(mb, id_coleccion, "card")
+    ids = {}
+    for numero, (titulo, _) in enumerate(INDICADORES.values(), 1):
+        coincidencias = [p for p in preguntas if p["name"] == titulo]
+        if len(coincidencias) != 1:
+            raise RuntimeError(f"I{numero}: se esperaba una unica pregunta: {titulo}")
+        ids[numero] = coincidencias[0]["id"]
+    tableros = [d for d in elementos_coleccion(mb, id_coleccion, "dashboard")
+                if d["name"] == NOMBRE_TABLERO]
+    if len(tableros) > 1:
+        raise RuntimeError("Hay tableros duplicados con el nombre esperado; revise Metabase.")
+    tablero = (mb.pedir("GET", f"/api/dashboard/{tableros[0]['id']}")
+               if tableros else None)
+    existentes = tablero.get("dashcards", []) if tablero else []
+    # Detenerse antes de reemplazar contenido ajeno a este tablero reproducible.
+    for elemento in existentes:
+        if elemento.get("card_id") and elemento["card_id"] not in ids.values():
+            raise RuntimeError("El tablero contiene preguntas ajenas a I1-I11.")
+    secciones = [
+        ("Demanda y evolucion temporal", [(1, 2), (7,)]),
+        ("Precio y pago", [(3, 4), (5, 6)]),
+        ("Operacion", [(8,)]),
+        ("Geografia y segmentos", [(9, 10)]),
+        ("Calidad de datos", [(11,)])]
+    encabezados = {s[0] for s in secciones}
+    for elemento in existentes:
+        if not elemento.get("card_id"):
+            texto = elemento.get("visualization_settings", {}).get("text", "")
+            if texto not in {"## " + s for s in encabezados}:
+                raise RuntimeError("El tablero contiene texto ajeno a las secciones previstas.")
+    if tablero and (tablero.get("tabs") or tablero.get("parameters")):
+        raise RuntimeError("El tablero existente tiene pestanas o filtros no previstos.")
+    tarjetas, fila = [], 0
+    def agregar(card_id, col, ancho, alto, texto=None):
+        previo = next((e for e in existentes
+                       if e.get("card_id") == card_id and
+                       (card_id is not None or
+                        e.get("visualization_settings", {}).get("text") == texto)), None)
+        ajustes = ({"text": texto, "virtual_card": {"display": "text"}}
+                   if texto else {})
+        tarjetas.append({"id": previo["id"] if previo else -(len(tarjetas) + 1),
+                         "card_id": card_id, "row": fila, "col": col,
+                         "size_x": ancho, "size_y": alto,
+                         "parameter_mappings": [], "series": [],
+                         "visualization_settings": ajustes})
+    for titulo, filas in secciones:
+        agregar(None, 0, 24, 2, "## " + titulo)
+        fila += 2
+        for numeros in filas:
+            alto = 10 if 9 in numeros else 8
+            ancho = 24 // len(numeros)
+            for posicion, numero in enumerate(numeros):
+                agregar(ids[numero], posicion * ancho, ancho, alto)
+            fila += alto
+    descripcion_tablero = ("Ejercicio 7: lectura conjunta de I1-I11. Demanda y evolucion "
+                           "temporal; precio y pago; operacion; geografia y segmentos; "
+                           "calidad de datos. Reutiliza las preguntas del punto 7.4.")
+    if not tablero:
+        tablero = mb.pedir("POST", "/api/dashboard", {
+            "name": NOMBRE_TABLERO, "collection_id": id_coleccion,
+            "description": descripcion_tablero})
+    id_tablero = tablero["id"]
+    mb.pedir("PUT", f"/api/dashboard/{id_tablero}", {
+        "description": descripcion_tablero, "width": "full", "dashcards": tarjetas})
+    verificado = mb.pedir("GET", f"/api/dashboard/{id_tablero}")
+    incluidos = [e["card_id"] for e in verificado["dashcards"] if e.get("card_id")]
+    if len(incluidos) != 11 or set(incluidos) != set(ids.values()):
+        raise RuntimeError("El tablero no contiene exactamente las 11 preguntas esperadas.")
+    print(f"Tablero: {NOMBRE_TABLERO}\n{URL_NAVEGADOR}/dashboard/{id_tablero}")
+    print("Verificado: 11 preguntas existentes, sin duplicados; 5 secciones.")
+    return id_tablero
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--solo-tablero", action="store_true",
+                        help="crear o actualizar el tablero 7.5 sin modificar preguntas")
+    argumentos = parser.parse_args()
     usuario, clave = os.environ.get("MB_USER"), os.environ.get("MB_PASSWORD")
     if not usuario or not clave:
         print("Defina MB_USER y MB_PASSWORD (p. ej. docker exec --env-file .env ...)")
         return 1
     mb = Metabase(os.environ.get("MB_URL", "http://metabase:3000"))
     mb.iniciar_sesion(usuario, clave)
+
+    if argumentos.solo_tablero:
+        crear_tablero(mb)
+        return 0
 
     id_base = obtener_base(mb)
     id_coleccion = obtener_coleccion(mb)
